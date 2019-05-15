@@ -1,5 +1,6 @@
 <template>
 <div class="wrapper">
+    <prediction v-if="makePrediction" :coinName="predictionName"></prediction>
      <div class="searchCard card grey darken-2">
          <div class="section white-text">
             <h6 class="center">Enter a coin identifier to search and add to your collection (example: btc)</h6>
@@ -27,27 +28,20 @@
                 </div>
             </div>
         </div>
-        
-            <h3 v-if="feedBack2" class="red-text">{{feedBack2}}</h3>
-             
-           
-        
-        
+
         <div class="block">
-            <div class="coinDisplay card z-depth-3" v-for="(coin, index) in coins" :key="index">
-                
-                    <i class="material-icons right" @click="deleteCoin(index)">delete_forever</i>
-               
-                    <div class="card-content blue lighten-5">
-                        <i class="cc medium right" :class="coin.coin_id"></i>
-                        <ul>
-                            <li>{{coin.coin_id}}</li>
-                            <li>{{coin.coin_name}}</li>
-                            <li>Last Price: ${{parseFloat(coin.last_price) < 1.0 ? parseFloat(coin.last_price).toFixed(4) : parseFloat(coin.last_price).toFixed(2)}}</li>
-                        </ul>
+            <CoinCard v-for="(c, index) in user.coins" :key=index :coin="c">
+                <i class="material-icons right" @click="deleteCoin(index)">delete_forever</i>
+                <!--<template v-slot:actionButton>
+                    <div class="card-action">
+                        <a class="btn-flt black-text" @click="showPrediction(c.coin_name)">Make a Prediction</a>
                     </div>
-            </div>
+                </template>-->
+            </CoinCard> 
         </div>
+        
+        
+        
     </div>
 </template>
 
@@ -55,13 +49,18 @@
 import db from '@/firebase/init'
 import firebase from 'firebase'
 import slugify from 'slugify'
-
+import axios from 'axios'
+import Prediction from '@/components/profile/Prediction'
+import CoinCard from '@/components/profile/CoinCard'
 
 
 export default {
+    components: {
+        Prediction,
+        CoinCard
+    },
     data(){
         return{
-            profile: null,
             feedback: null,
             user: null,
             coinID: null,
@@ -72,11 +71,19 @@ export default {
            feedBack2: null,
            show: false,
            response: null,
-           coins: []
+           coins: [],
+           makePrediction: false,
+           date: null,
+           predictionName: null,
+            likes: null
         }
     },
     methods:{
-        // This method will get coin data from api and display it
+        showPrediction(name){
+            this.makePrediction = true
+            this.predictionName = name
+        },
+        // This method will get coin data from api and display it       
         getCoin(){
             if(this.searchTerm){
                let s = "https://bravenewcoin-v1.p.rapidapi.com/ticker?show=usd&coin=" + this.searchTerm
@@ -126,24 +133,16 @@ export default {
         let newCoins = this.coins.filter((value, index, arr) => {
             return index!=ind
         })
-
+        
         this.coins = newCoins
         this.writeToFireStore()
     },
     // writes user coin data to firestore
     writeToFireStore(){
-        let db = firebase.firestore()
-            let ref = db.collection('users')
             
-            let slug = slugify(this.profile.alias, {
-                    replacement: '-',
-                    remove: /[$*_+~.()'"!\-:@]/g,
-                    lower: true
-                })
-
-            ref.doc(slug).set({
-                coins: this.coins
-            }, {merge: true})
+            db.collection('users').doc(this.$route.params.id).set({
+                coins:this.coins
+            }, {merge:true})
     },
     compare(a,b) {
         if (a.coin_id < b.coin_id)
@@ -157,57 +156,51 @@ export default {
     // hook to run when page is created
     // loads in all user data from firestore
     created(){
-        console.log('created')
-        let db = firebase.firestore()
-        let ref = db.collection('users')
-        let user = firebase.auth().currentUser
+             /*axios.get('https://min-api.cryptocompare.com/data/price', {
+            params: {
+                fsym: 'BTC',
+                tsyms: 'USD',
+                api_key: '049a98fde29c9c52213d887959fa39028a8f15f2f55ea5fd5f41c20343c5235c'
+            }
+        }).then(function(response){
+            console.log(response)
+        })*/
+       
         var unirest = require('unirest')
-        ref.where('user_id', '==', user.uid).get()
-        .then(snapshot => {
-            snapshot.forEach(doc => {
-                this.user = doc.data()
-                this.user.id = doc.id               
-            })
-        })
-
         
-    
-        setTimeout(() => {
-        ref.doc(this.user.id).get()
-        .then(user => {
-            this.profile = user.data()
-            //console.log(this.profile)
-        })
-        .then(() => {
-            this.profile.coins.forEach(coin => {//console.log('here')
+      
+        
+        db.collection('users').doc(this.$route.params.id).get()
+        .then(doc => {
+            doc.data().coins.forEach(coin => {
                 let s = "https://bravenewcoin-v1.p.rapidapi.com/ticker?show=usd&coin=" + coin.coin_id
                 unirest.get(s)
                 .header("X-RapidAPI-Host", "bravenewcoin-v1.p.rapidapi.com")
                 .header("X-RapidAPI-Key", "7516ddf706msh11c5f5dd27811f7p112ac4jsn1b6eab937f51")
-                .then(response => {//console.log(response)
+                .then(response => {
                     if(response.body.success){
                         this.coins.push(response.body)
-                        //console.log(response.body)
+                       this.writeToFireStore()
                } else {
-                   console.log('here 3')
                     this.coinID = null
                     this.coinName = null
                     this.lastPrice = null
                    this.feedBack2 = "Failed to load in user data"
                }
             })
-            
+            })          
         })
-        console.log(this.coins)
-        
-            }
-        )
-    }
-    , 800)
-        
     },
+    update(){
+        this.coins.sort(this.compare)
+        console.log("UPDATE")
+    },
+    firestore(){
+       return{
+              user: db.collection('users').doc(this.$route.params.id)
+       }
+    }
 }
-
 </script>
 
 <style>
@@ -225,7 +218,7 @@ export default {
        text-align: center;
        position: relative;
    }
-   .searchDisplay .card-action{
+  .card-action {
        padding: 4px;
    }
    .searchDisplay .card-content{
@@ -237,26 +230,11 @@ export default {
        text-align: center;
        
    }
-   .card-action a:hover{
-       background-color: #616161;
-   }
-   .coinDisplay{
-        width: 300px;
-        margin: 20px;
-        text-align: left;
-        display: inline-block;
-   }
+ 
    .block{
        display: block;
        margin: 10px 30px;
    }
-   .coinDisplay .material-icons{
-       margin-right: 7px;
-       margin-top: 7px;
-       cursor: pointer;
-   }
-   .coinDisplay div.card-content i{
-       margin: none;
-   }
+
 </style>
 

@@ -4,6 +4,9 @@ import Signup from '@/components/auth/Signup'
 import Login from '@/components/auth/Login'
 import Home from '@/components/home/Home'
 import UserProfile from '@/components/profile/UserProfile'
+import Test from '@/components/Test'
+import Predictions from '@/components/predictions/Predictions'
+import Comments from '@/components/predictions/Comments'
 import firebase from 'firebase'
 
 
@@ -30,11 +33,26 @@ const router = new Router({
     {
       path: '/profile/:id',
       name: 'UserProfile',
-      component: UserProfile,
-      meta: {
-        requiresAuth: true
-      }
+      component: UserProfile
+    },
+    {
+      path: '/test',
+      name: 'Test',
+      component: Test 
+    },
+    {
+      path: '/predictions/:coin',
+      name: 'Predictions',
+      component: Predictions,
+      props: true
+    },
+    {
+      path: '/predictions/:coin/comments/',
+      name: 'Comments',
+      component: Comments,
+      props: true
     }
+
   ]
 })
 

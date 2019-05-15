@@ -6,11 +6,12 @@
              <p class="center intro">Crypto tracker allows you to track all of your favorite cryptocurrencies as their prices rise and fall. 
                  Sign up and choose which coins to follow. Feel free to use our search tool below to explore some of the over 500 crypto
                   currencies that we offer up to date info on.</p>
+            <p>Predict where the prices will go and comment on others predictions.</p>
            
        
         <div class="searchCard card grey darken-2">
          <div class="section white-text">
-            <h6 class="center">Enter a coin identifier to search and add to your collection (example: btc)</h6>
+            <h6 class="center">Enter a coin identifier to search (example: btc)</h6>
          </div>
             <div class="card-content">
                 <form @submit.prevent="getCoin">

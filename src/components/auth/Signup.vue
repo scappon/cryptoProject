@@ -49,8 +49,25 @@ export default {
                     remove: /[$*_+~.()'"!\-:@]/g,
                     lower: true
                 })
+                firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+                .then(cred => {
+                    db.collection('users').doc(cred.user.uid).set({
+                        alias: this.alias,
+                        user_id: cred.user.uid
+                    })
+                    this.id = cred.user.uid
+                })
+                .then(() => {
+                    this.$router.push({name: 'UserProfile', params: {id: this.id}})
+                })
+               .catch(err => {
+                        console.log(err)
+                        this.feedback = err.message
+                    })
+                /*
                 const db = firebase.firestore()
-                let ref = db.collection('users').doc(this.slug)
+                let ref = db.collection('users').doc()
+                console.log(ref)
                 ref.get().then(doc => {
                     if(doc.exists){
                         this.feedback = "This alias already exists"
@@ -59,7 +76,6 @@ export default {
                         .then(cred => {
                             ref.set({
                                 alias: this.alias,
-                                //geolocation: null,
                                 user_id: cred.user.uid
                                 
                             })
@@ -77,6 +93,7 @@ export default {
                 console.log(this.slug)
             } else {
                 this.feedback = "You must enter all fields"
+            }*/
             }
         }
     }
