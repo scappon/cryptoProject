@@ -2,7 +2,8 @@
     <div class="chat container">
         <div class="card">
             <div class="card-content">
-                <h3 class="center teal-text">{{coinPrediction.prediction}}</h3>
+                <h3 class="center">{{$route.params.name}}</h3>
+                <h3 class="center">${{coinPrediction.prediction}}</h3>
             </div>
         </div>
         
