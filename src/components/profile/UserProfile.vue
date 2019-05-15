@@ -29,14 +29,10 @@
             </div>
         </div>
 
+        <!--Display coin cards for coins the user follows-->
         <div class="block">
             <CoinCard v-for="(c, index) in user.coins" :key=index :coin="c">
                 <i class="material-icons right" @click="deleteCoin(index)">delete_forever</i>
-                <!--<template v-slot:actionButton>
-                    <div class="card-action">
-                        <a class="btn-flt black-text" @click="showPrediction(c.coin_name)">Make a Prediction</a>
-                    </div>
-                </template>-->
             </CoinCard> 
         </div>
         
@@ -79,6 +75,7 @@ export default {
         }
     },
     methods:{
+        //Show prediction card so user can make a prediction on a coin
         showPrediction(name){
             this.makePrediction = true
             this.predictionName = name
@@ -183,7 +180,6 @@ export default {
     },
     update(){
         this.coins.sort(this.compare)
-        console.log("UPDATE")
     },
     firestore(){
        return{

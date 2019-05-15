@@ -31,6 +31,7 @@ export default {
         }
     },
     methods: {
+        //add prediction to database and then close prediction card
         makePrediction(){
             if(this.prediction!=null && this.dateinstance.toString()!=""){
                 db.collection('predictions').doc(this.coinID).collection('users').doc(this.$route.params.id).set({
@@ -45,19 +46,21 @@ export default {
             }
             
         },
+        //close prediction card
         close(){
             this.$emit('close')
         }
         
     },
-    mounted(){
-       
-       var options = {}
-        
 
+    mounted(){
+       //code to initialize date picker
+       var options = {}
         var elems2 = document.querySelectorAll('.datepicker');
         this.dateinstance = M.Datepicker.init(elems2, options);
 
+
+        //get users alias
         db.collection('users').doc(this.$route.params.id).get()
         .then(doc => {
             this.alias = doc.data().alias
@@ -68,12 +71,7 @@ export default {
 
 <style>
     .predictionCard{
-        
         padding: 10px;
-        /*
-       position: absolute;
-       top: 35%;
-       left: 25%;*/
        margin: 0;
     }
 </style>

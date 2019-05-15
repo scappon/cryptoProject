@@ -10,6 +10,8 @@
           </tr>
         </thead>
 
+
+        <!--Put all predictions for coin into table-->
         <tbody>
           <tr v-for="(user, index) in coinPredictions" :key="index" @click="toComments(user.id)">
             <td>{{user.alias}}</td>
@@ -33,12 +35,14 @@ export default {
         }
     },
     methods: {
+        //push user to comments on prediction they clicked on
         toComments(id){
             this.$router.push({name: 'Comments', params: {name: this.name, coin: this.$route.params.coin, user: id}})
         }
     },
     firestore(){
         return{
+            //get all predictions on coin
            coinPredictions: db.collection('predictions').doc(this.$route.params.coin).collection('users')
         }
     }

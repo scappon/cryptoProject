@@ -1,7 +1,9 @@
 <template>
             <div class="coinDisplay card z-depth-3">
+                <!--Slot for garbage can icon (only when not in prediction card)-->
                 <slot v-if="!makePrediction"></slot>
                 <prediction v-if="makePrediction" :coinName="coin.coin_name" :coinID="coin.coin_id" v-on:close="hidePrediction"></prediction>
+                
                 <div v-else class="card-content">
                     <i class="cc medium right" :class="coin.coin_id"></i>
                     <ul>
@@ -9,7 +11,7 @@
                         <li>{{coin.coin_name}}</li>
                         <li>Last Price: ${{parseFloat(coin.last_price) < 1.0 ? parseFloat(coin.last_price).toFixed(4) : parseFloat(coin.last_price).toFixed(2)}}</li>
                     </ul>
-<!--<slot name="actionButton"></slot>-->
+
                     <div class="card-action">
                         <a class=" waves-effect waves-light btn-small black-text center" @click="showPrediction">Make a Prediction</a><br><br>
                         <a class=" waves-effect waves-light btn-small black-text center" @click="viewCoinPredictions">View Predictions</a>
@@ -27,6 +29,7 @@ import db from '@/firebase/init'
 import Prediction from '@/components/profile/Prediction'
 
 export default {
+    //coin object
     props:['coin'],
     components:{
         Prediction
@@ -37,13 +40,15 @@ export default {
         }
     },
     methods:{
+        //shows preiction card
         showPrediction(){
             this.makePrediction = true
-            console.log("in show prediction")
         },
+        //hides prediction card
         hidePrediction(){
             this.makePrediction = false
         },
+        //pushes user to predictions for coin
         viewCoinPredictions(){
             this.$router.push({name: 'Predictions', params: {coin: this.coin.coin_id, name: this.coin.coin_name}})
         }

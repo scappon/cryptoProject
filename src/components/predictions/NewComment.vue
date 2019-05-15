@@ -24,6 +24,7 @@ export default {
         }
     },
     methods: {
+        //Adds message into database
         addMessage(){
             if(this.newMessage){
                 db.collection('predictions').doc(this.$route.params.coin).collection('users').doc(this.id).collection('comments').add({
@@ -45,6 +46,7 @@ export default {
     
     firestore(){
         return{
+            //doc for user signed in
             alias2:  db.collection('users').doc(this.alias)
         } 
     }

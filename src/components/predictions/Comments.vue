@@ -51,12 +51,14 @@ export default {
         }
     },
     methods: {
+        //Add like in database for comment          
         upVote(id, likess){
             var comment = db.collection('predictions').doc(this.$route.params.coin).collection('users').doc(this.user).collection('comments').doc(id).update({
                 likes: likess+1
             })
            
         },
+        //Add dislike in database for comment
         downVote(id, dislikess){
             var comment = db.collection('predictions').doc(this.$route.params.coin).collection('users').doc(this.user).collection('comments').doc(id).update({
                 dislikes: dislikess+1
@@ -65,16 +67,19 @@ export default {
     },
     firestore(){
         return{
+            //comments collection
             comments: db.collection('predictions').doc(this.$route.params.coin).collection('users').doc(this.user).collection('comments'),
-            //alias: db.collection('users').doc(this.user),
+            //prediction being commented on
             coinPrediction: db.collection('predictions').doc(this.$route.params.coin).collection('users').doc(this.user)
         }
     },
+    //put timestamp in readable format
     filters: {
                 moment: function (date) {
                 return moment(date).format('lll')
                 }
             },
+    //Used to get current signed in user
     created(){
         this.alias = firebase.auth().currentUser.uid
     }
