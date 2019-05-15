@@ -64,36 +64,7 @@ export default {
                         console.log(err)
                         this.feedback = err.message
                     })
-                /*
-                const db = firebase.firestore()
-                let ref = db.collection('users').doc()
-                console.log(ref)
-                ref.get().then(doc => {
-                    if(doc.exists){
-                        this.feedback = "This alias already exists"
-                    } else {
-                        firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
-                        .then(cred => {
-                            ref.set({
-                                alias: this.alias,
-                                user_id: cred.user.uid
-                                
-                            })
-                            this.id = cred.user.uid
-                        }).then(() => {
-                            this.$router.push({name: "UserProfile", params: {id: this.id}})
-                        })
-                        .catch(err => {
-                            console.log(err)
-                            this.feedback = err.message
-                        })
-                        this.feedback = "This alias is free to use"
-                    }
-                })
-                console.log(this.slug)
-            } else {
-                this.feedback = "You must enter all fields"
-            }*/
+                
             }
         }
     }

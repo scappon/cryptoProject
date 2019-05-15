@@ -156,16 +156,6 @@ export default {
     // hook to run when page is created
     // loads in all user data from firestore
     created(){
-             /*axios.get('https://min-api.cryptocompare.com/data/price', {
-            params: {
-                fsym: 'BTC',
-                tsyms: 'USD',
-                api_key: '049a98fde29c9c52213d887959fa39028a8f15f2f55ea5fd5f41c20343c5235c'
-            }
-        }).then(function(response){
-            console.log(response)
-        })*/
-       
         var unirest = require('unirest')
         
       

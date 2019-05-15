@@ -42,10 +42,7 @@ export default {
             }
         }
     },
-    mounted(){
-        //this.alias2 = db.collection('users').doc(this.alias)
-
-    },
+    
     firestore(){
         return{
             alias2:  db.collection('users').doc(this.alias)
